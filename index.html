@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and base styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+            /* Rich soft gradient: warm blush → soft lavender → cool mist */
+            background: linear-gradient(160deg, #fdf2f8 0%, #f5f3ff 30%, #eff6ff 60%, #f0fdfa 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        /* Card: soft shadow, subtle border, gentle radius */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2.25rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.06),
+                0 10px 20px -5px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        h1 {
+            margin: 0 0 1.75rem 0;
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #1e1b4b;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+
+        .field {
+            margin-bottom: 1.35rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        /* Inputs: hover + focus for a nice feel */
+        input {
+            width: 100%;
+            padding: 13px 16px;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:hover {
+            border-color: #c7d2fe;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Button: full hover treatment */
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 0.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4), 0 6px 14px rgba(139, 92, 246, 0.25);
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+        }
+
+        button:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+        }
+
+        button:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Results block */
+        .results {
+            margin-top: 1.5rem;
+            padding: 1.35rem;
+            background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .results h3 {
+            margin: 0 0 0.85rem 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.55rem 0;
+        }
+
+        .result-row:not(:last-child) {
+            border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .result-value {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #1f2937;
+        }
+
+        .result-value.total {
+            color: #6d28d9;
+            font-size: 1.3rem;
+        }
+
+        /* Error message */
+        .error {
+            margin-top: 0.85rem;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #b91c1c;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(185, 28, 28, 0.12);
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .results.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Card: everything is inside this centered white box -->
+    <div class="card">
+        <h1>Tip Calculator</h1>
+
+        <!-- Bill amount input -->
+        <div class="field">
+            <label for="billAmount">Bill amount ($)</label>
+            <input type="number" id="billAmount" placeholder="e.g. 45.50" min="0" step="0.01" inputmode="decimal">
+        </div>
+
+        <!-- Tip percentage input -->
+        <div class="field">
+            <label for="tipPercent">Tip percentage (%)</label>
+            <input type="number" id="tipPercent" placeholder="e.g. 15" min="0" max="100" step="0.5" inputmode="decimal">
+        </div>
+
+        <!-- Button that runs the calculation when clicked -->
+        <button type="button" id="calculateBtn">Calculate</button>
+
+        <!-- Error message (shown only when input is invalid) -->
+        <div class="error" id="errorMsg">Please enter valid positive numbers.</div>
+
+        <!-- Results: tip amount and total (shown after a successful calculation) -->
+        <div class="results hidden" id="results">
+            <h3>Your bill</h3>
+            <div class="result-row">
+                <span class="result-label">Tip amount</span>
+                <span class="result-value" id="tipAmount">$0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Total amount</span>
+                <span class="result-value total" id="totalAmount">$0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the HTML elements we need
+        const billInput = document.getElementById('billAmount');
+        const tipInput = document.getElementById('tipPercent');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const resultsDiv = document.getElementById('results');
+        const tipAmountSpan = document.getElementById('tipAmount');
+        const totalAmountSpan = document.getElementById('totalAmount');
+
+        // Run calculation when the button is clicked
+        calculateBtn.addEventListener('click', calculateTip);
+
+        // Optional: also run when user presses Enter in an input
+        billInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') calculateTip();
+        });
+        tipInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') calculateTip();
+        });
+
+        /**
+         * Main function: reads bill and tip %, validates, then shows tip and total.
+         */
+        function calculateTip() {
+            // Hide any previous error and results
+            errorMsg.classList.remove('show');
+            resultsDiv.classList.add('hidden');
+
+            // Read values from inputs and convert to numbers
+            const bill = parseFloat(billInput.value);
+            const tipPercent = parseFloat(tipInput.value);
+
+            // Validation: check that we have valid positive numbers
+            if (isNaN(bill) || bill <= 0) {
+                errorMsg.textContent = 'Please enter a valid bill amount (positive number).';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (isNaN(tipPercent) || tipPercent < 0) {
+                errorMsg.textContent = 'Please enter a valid tip percentage (0 or more).';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Calculate tip amount and total (total = bill + tip)
+            const tipAmount = (bill * tipPercent) / 100;
+            const totalAmount = bill + tipAmount;
+
+            // Show results with 2 decimal places (currency format)
+            tipAmountSpan.textContent = '$' + tipAmount.toFixed(2);
+            totalAmountSpan.textContent = '$' + totalAmount.toFixed(2);
+
+            // Make the results section visible
+            resultsDiv.classList.remove('hidden');
+        }
+    </script>
+
+</body>
+</html>
